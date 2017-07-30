@@ -1,0 +1,36 @@
+Example data from MS units. retroDash uses this. Super simple.
+
+127.0.0.1:6379> hget collection:stream:bob:data 1
+"{'time': '17210200226815846', 'type': 'pyefi', 'length': 213,
+'rawData': '0103061acd1acd01f3006400039393010103e8014a02bc07080086009500aa00aa000003e803e803e500640000006403e8006400640064000000000000000000560000014a006400000064000100010800000003c8000000890000014a0000050000000000000000000000000000000000000000000000000000000000000000000001002a00000000006400000000000000000000000000000000000000000000014a014a0000000000000000000002bc000000000000000000640000000000000000000000000000000002bb0000d30004000000',
+ 'crc32': 2165770755, 'serialLatency': 0.03587460517883301}"
+
+
+parsed rawData:
+{
+'seconds': 1341, 'pulsewidth1': 3294, 'pulsewidth2': 3294, 'rpm': 626,
+'advance': 156, 'squirt': 0, 'engine': 1, 'afrtgt1': 140, 'afrtgt2': 140,
+'wbo2_en1': 1, 'wbo2_en2': 1, 'barometer': 1000, 'map': 320, 'mat': 699,
+'coolant': 1799, 'tps': 888, 'batteryvoltage': 149, 'afr1': 169,
+'afr2': 169, 'knock': 0, 'egocorrection1': 1000, 'egocorrection2': 1000,
+'aircorrection': 997, 'warmupenrich': 100, 'accelenrich': 0, 'tpsfuelcut': 100,
+'barocorrection': 1000, 'gammaenrich': 99, 'vecurr1': 272, 'vecurr2': 272,
+'iacstep': 0, 'coldadvdeg': 0, 'tpsdot': 0, 'mapdot': 0, 'dwell': 44,
+'mafload': 0, 'fuelload': 320, 'fuelcorrection': 100, 'portstatus': 0,
+'knockretard': 0, 'eaefuelcorr1': 100, 'egov': 1, 'egov2': 1, 'status1': 8,
+'status2': 0, 'status3': 0, 'status4': 0, 'looptime': 929, 'status5ca': 0,
+'tpsadc': 908, 'fuelload2': 0, 'ignload': 320, 'ignload2': 0, 'synccnt': 4,
+'timing_err': 0, 'deltat': 0, 'wallfuel1': 0, 'gpioadc0': 0, 'gpioadc1': 0,
+'gpioadc2': 0, 'gpioadc3': 0, 'gpioadc4': 0, 'gpioadc5': 0, 'gpioadc6': 0,
+'gpioadc7': 0, 'gpiopwmin0': 0, 'gpiopwmin1': 0, 'gpiopwmin2': 0, 'gpiopwmin3': 0,
+'adc6': 1, 'adc7': 42, 'wallfuel2': 0, 'eaefuelcorr2': 100, 'boostduty': 0,
+'syncreason': 0, 'user0': 0, 'inj_adv1': 0, 'inj_adv2': 0, 'pulsewidth3': 0,
+'pulsewidth4': 0, 'vetrim1curr': 0, 'vetrim2curr': 0, 'vetrim3curr': 0,
+'vetrim4curr': 0, 'maf': 0, 'eaeload1': 320, 'afrload1': 320, 'rpmdot': 3,
+'gpioport0': 0, 'gpioport1': 0, 'gpioport2': 0, 'spare': 0, 'cl_idle_targ_rpm': 0,
+'maf_volts': 0, 'airtemp': 699, 'dwell_trl': 0, 'fuel_pct': 0, 'boost_targ': 0,
+'ext_advance': 0, 'base_advance': 156, 'idle_cor_advance': 0, 'mat_retard': 0,
+'flex_advance': 0, 'adv1': 156, 'adv2': 0, 'adv3': 0, 'revlim_retard': 0,
+'nitrous_retard': 0, 'deadtime1': 715, 'n2o_addfuel': 0, 'portbde': 211,
+'portam': 0, 'portt': 5, 'can_error_bits': 0, 'can_error_cnt': 0
+}

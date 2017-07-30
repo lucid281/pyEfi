@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+startingDir=$PWD
+scriptPath="`dirname \"$0\"`"
+cd $scriptPath
+
+# tmux ftw
+# alacritty -e tmuxp load . ; tmux kill-session -t pyEfiDashboard
+tmuxp load . ; tmux kill-session -t pyEfiDashboard
+
+cd $startingDir

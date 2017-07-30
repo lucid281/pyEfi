@@ -1,0 +1,17 @@
+dashboards:
+  - name: rpm
+    gaugePairs:
+      1: 'rpm.     .bar.0.8500.8000.>55'
+      2: 'rpm.rpm.shiny.0.8500.8000.<4'
+      10: 'rpmdot.dot.shiny.-400.400.300.>5'
+      35: 'pulsewidth1.    .bar.0.25000.300.>10'
+      42: 'pulsewidth1.pwm1.shiny.0.25000.300.<5'
+      45: 'pulsewidth2.    .bar.0.25000.300.>10'
+      47: 'pulsewidth2.pwm2.shiny.0.25000.300.<5'
+      55: 'tps.tps.shiny.0.1000.1000.>5'
+      65: 'tps.     .bar.0.1000.1000.<45'
+  - name: health
+    gaugePairs:
+      10: 'batteryvoltage.volt.shiny.0.3000.2500.>6'
+      15: 'coolant.temp.shiny.100.2000.300.>6'
+      25: 'coolant.    .bar.100.2000.300.<35'
