@@ -1,0 +1,19 @@
+#
+#  pyEfi tmuxp dashboard
+#
+session_name: pyEfiDashboard
+windows:
+- window_name: project1
+  layout: main-horizontal
+  options:
+    main-pane-height: 22
+  panes:
+# 1: run redis data display
+    - ./pyefi.py run dashboard stream:1 rpm microsquirt.ini
+# 2: run collection from usbLoc to: baseKey:collectorKey:*
+    - ./pyefi.py run collectMS microsquirt.ini /dev/ttyUSB0 stream:1
+# 3: process incoming collected data -- 'label, gfx, min, max, width/just'
+    - ./pyefi.py run dashboard stream:1 health microsquirt.ini
+    - shell_command:
+      - ./pyefi.py dash syncYml dashboards.yml
+#      - python -m serial.tools.miniterm -e /dev/ttyACM0
