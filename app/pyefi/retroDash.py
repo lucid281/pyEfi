@@ -142,8 +142,8 @@ class RetroDash():
                 prettyKeys += "!"
 
         if prettyValues:
-            print(prettyValues)
-            print(prettyKeys + "\r", end='')
+            prettyBuffer = "%s\n%s" % (prettyValues, prettyKeys)
+            print(prettyBuffer, end='\r')
 
 
 class dashCli():

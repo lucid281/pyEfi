@@ -45,17 +45,27 @@ The `apt` commands are for Debian based distros, adjust for other GNU + Linuxes.
 # redis conf: /etc/redis/redis.conf
 # unix socket
 unixsocket /var/run/redis/redis.sock
-unixsocketperm 770
+unixsocketperm 660
 ```
 restart redis: `service redis restart`
 
 
 ## misc
+#### Serial Permissions and Latency
+Older versions of the Linux kernel set `latency_timer` to `1`. The 4.x kernels I've tried set `latency_timer` to `16` by default, effectively slowing the max collection rate.
+
+Create `/etc/udev/rules.d/60-ftdi_sio.rules`, with the following:
+```
+KERNEL=="ttyUSB[0-9]*", SUBSYSTEMS=="usb-serial", DRIVERS=="ftdi_sio", ATTR{latency_timer}="1", MODE="0666", GROUP="users"
+```
+The above will set the latency to 1ms (check every 1ms) and set nicer permissions for every `ftdi_sio` device. You will need to unplug and replug the usb->serial device.
+
 #### ardu-stim
-python -m serial.tools.miniterm /dev/ttyACM0
+
+`python -m serial.tools.miniterm -e /dev/ttyACM0`
 #### snippets dependencies
 ```
-# used in some of the 'test' scripts
+# used in some of the 'ref' scripts
 pip install matplotlib
 pip install vispy
 pip install numpy
