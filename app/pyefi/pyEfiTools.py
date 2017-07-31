@@ -24,7 +24,7 @@ class PyEfiTools:
         self.ser.write(b"A")
         print("old method: ", self.ser.read(212))
 
-    # this isnt perfect. you need to strip out %'s' from the ini,
+    # this isn't perfect. you need to strip out %'s' from the ini,
     # or else config.read pukes
     def genByteMappingA(self, iniPath):
         config = configparser.ConfigParser()
@@ -101,8 +101,8 @@ class PyEfiTools:
     def initSerial(self, serialPort, baud=115200):
 
         try:  # ...to init serial port
-            self.ser = serial.Serial(serialPort,
-                                     baud,
+            self.ser = serial.Serial(port=serialPort,
+                                     baudrate=baud,
                                      write_timeout=0.05,
                                      timeout=0.05)
             ttyP(4, "  serial @ " + self.endc + serialPort)
@@ -224,6 +224,8 @@ class PyEfiTools:
                     'rawData': rawPayload.hex(),
                     'crc32': rcvdPacketCrc
                 }
+                # print(self.ser)
+                # exit(1)
                 return eventHash
             else:
                 print("    sndRcvA: BAD CRC32: ", rcvdPacketCrc)
