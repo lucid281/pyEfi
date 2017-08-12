@@ -6,11 +6,11 @@ import time
 import random
 import string
 
+from app.pyefi.pyEfiStimulator import pyEfiStimulator
 from app.pyefi.pyEfiTools import PyEfiTools
 from app.pyefi.pyEfiRedis import EfiDB
 from app.pyefi.retroDash import dashCli
 from app.pyefi.ttyP import ttyP
-
 
 class Pipeline():
     # These stay in loop
@@ -47,6 +47,8 @@ class runCli():
         # start serial collection loop with redisDb and specified channelKey
         efi.redisSerialCollectLoop(redisDb, channelKey)
 
+    def stim(self):
+        pyEfiStimulator()
 
 class testCli():
     def H(self, count, redisSocket='/var/run/redis/redis.sock'):
@@ -61,10 +63,8 @@ class testCli():
         end = time.time()
         dur = end - start
         rate = count / dur
-
-        colTxt = " HSET %s keys in %.4f seconds @ %.0f/s\n" % (count, dur, rate)
+        colTxt = " HSET %s keys in %.4f seconds @ %.0f/s" % (count, dur, rate)
         ttyP(0, colTxt)
-
 
         start = time.time()
         for x in range(0, count):
@@ -72,7 +72,6 @@ class testCli():
         end = time.time()
         dur = end - start
         rate = count / dur
-
         colTxt = " HGET %s keys in %.4f seconds @ %.0f/s" % (count, dur, rate)
         ttyP(0, colTxt)
 

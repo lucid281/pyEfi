@@ -187,7 +187,7 @@ class PyEfiTools:
 
             # pipeline ensures everything happens atomically
             dbPipe = redisDb.pipeline()
-            indexNow = redisDb.incr(indexKey)   # incr index counter
+            indexNow = redisDb.incr(indexKey)  # incr index counter
             dbPipe.hset(dataKey, indexNow, eventPacket)  # write packet to channel
             dbPipe.zadd(timeKey, eventPacket['time'], indexNow)
 
