@@ -2,18 +2,25 @@
 #  pyEfi tmuxp dashboard
 #
 session_name: pyEfiDashboard
+suppress_history: false
 windows:
 - window_name: project1
   layout: main-horizontal
   options:
-    main-pane-height: 22
+    main-pane-height: 25
   panes:
 # 1: run redis data display
-    - ./pyefi.py run dashboard stream:1 rpm microsquirt.ini
-# 2: run collection from usbLoc to: baseKey:collectorKey:*
-    - ./pyefi.py run collectMS microsquirt.ini /dev/ttyUSB0 stream:1
+# '--iniFile=' needed to encode/decode serial data, not needed for stimulator/generic data
+#    - ./pyefi.py run dashboard --channelKey=test --confKey=rpm --iniFile=microsquirt.ini
+    - ./pyefi.py run dashboard --channelKey=test --confKey=rpm
+
+# 2: run collection
+#    - ./pyefi.py run collectMS --iniFile=microsquirt.ini --serialLoc=/dev/ttyS0 --channelKey=test
+    - ./pyefi.py run stim --channelKey=test
+
 # 3: process incoming collected data -- 'label, gfx, min, max, width/just'
-    - ./pyefi.py run dashboard stream:1 health microsquirt.ini
-    - shell_command:
-      - ./pyefi.py dash syncYml dashboards.yml
-#      - python -m serial.tools.miniterm -e /dev/ttyACM0
+#    - ./pyefi.py run dashboard --channelKey=test --confKey=health --iniFile=microsquirt.ini
+    - ./pyefi.py run dashboard --channelKey=test --confKey=health
+
+# 4: sync dashboard yml config loads 'dashboards.yml' by default can take '--ymlFileName=' argument
+    - ./pyefi.py dash syncYml dashboards.yml

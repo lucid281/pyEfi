@@ -1,11 +1,17 @@
 #!/usr/bin/env bash
 
 startingDir=$PWD
+
+# run from anywhere
 scriptPath="`dirname \"$0\"`"
 cd $scriptPath
 
-# tmux ftw
+# if you want a faster terminal, download and compile alacritty
 # alacritty -e tmuxp load . ; tmux kill-session -t pyEfiDashboard
-tmuxp load . ; tmux kill-session -t pyEfiDashboard
 
+# tmux ftw
+tmuxp load .
+tmux kill-session -t pyEfiDashboard
+
+# and finally return to starting dir
 cd $startingDir

@@ -11,11 +11,12 @@ class RetroDash():
     """
     Redis Data Dashboard -- driven by Redis of course.
 
-    Pipes split rrdString params, commas separate multiple rrdStrings
+    dots split rddString params, commas separate multiple rrdStrings
+    when using './pyefi.py dash add'
 
     rddString Example:
-         keyName|label|gfxKey|minVal|maxVal|fireVal|justStr
-      rpm|RPM|shiny|0|8000|7000|^5, rpm|RPM|bar|0|8000|7000|<20
+         keyName.label.gfxKey.minVal.maxVal.fireVal.justStr
+      rpm.RPM.shiny.0.8000.7000.^5, rpm.RPM.bar.0.8000.7000.<20
     """
     def __init__(self, pyEfiObject, confKey):
         self.endc = '\033[0m'  # Clear color and other terminal states
@@ -37,22 +38,18 @@ class RetroDash():
             value = float(inputData[keyName])
             maxNum = int(maxVal)  # need to test a float here
             # minNum = minValue
-
             # ANSI color code map - this can be any length
             rainbow = [123, 43, 46, 82, 118, 154, 190,
                        226, 220, 214, 208, 202, 196]
             rainbowLen = len(rainbow)
-
-            # factor up or else int() wont work right
+            # factor up or else int() wont work right with small ints
             maxNum = maxNum * 100
             numNow = value * 100
-
             # math! use the int results of...
             numStep = int(maxNum / rainbowLen)
             numKey = int(abs(numNow) / numStep)
             # if numKey >= rainbowLen, force numKey to last[#] in array
             if numKey >= rainbowLen: numKey = rainbowLen - 1
-
             # pas str for cols and set array position(color) + rpm text
             colText = ("{:%s}" % (justStr)).format(inputData[keyName])
             pColText = ("\033[38;5;%sm%s\033[0m" % (rainbow[numKey], colText))
@@ -63,7 +60,6 @@ class RetroDash():
             rainbow = [123, 43, 46, 82, 118, 154, 190,
                        226, 220, 214, 208, 202, 196]
             rainbowLen = len(rainbow)
-
             colWidth = int(re.sub("[^0-9]", "", justStr))
             value = float(inputData[keyName])
             maxNum = float(maxVal)  # need to test a float here
@@ -71,17 +67,14 @@ class RetroDash():
             maxNumF = maxNum * 100
             numNowF = value * 100
             colNowF = colWidth * 100
-
             # math! use the int results of...
             numStep = int(maxNumF / rainbowLen)
             numKey = int(numNowF / numStep)
             if numKey >= rainbowLen: numKey = rainbowLen - 1
-
             colStep = int(maxNumF / colWidth)
             colKey = int(numNowF / colStep)
             if colKey >= colWidth: colKey = colWidth - 1
-
-            boxes = "\u2588" * colKey  # boxes
+            # boxes = "\u2588" * colKey  # boxes
             boxes = "-" * colKey
             colText = ("{:%s}" % (justStr)).format(boxes)
             pColText = ("\033[38;5;%sm%s\033[0m" %
@@ -98,13 +91,19 @@ class RetroDash():
     def playStream(self, pyEfiObject=None):
         def finalize(deSerialized):
             if 'type' in deSerialized:
-                # if type pyefi is set AND we have a pyEfiObject...
-                if 'pyefi' in deSerialized['type'] and pyEfiObject is not None:
-                    # ... then parse the event...
-                    final = pyEfiObject.parseEvent(deSerialized)
-                else:
-                    # ... otherwise move on
+                if 'pyefi' in deSerialized['type']:
+                    try:
+                        final = pyEfiObject.parseEvent(deSerialized)
+                    except AttributeError:
+                        ttyP(1, "\n Data marked 'pyefi' but no iniFile found to decode data!")
+                        ttyP(7, "  Exiting!\n")
+                        exit(1)
+                elif 'simple' in deSerialized['type']:
                     final = deSerialized
+                else:
+                    ttyP(1, "\n Data not marked 'pyefi' or 'simple")
+                    ttyP(7, "  Exiting!\n")
+                    exit(1)
             return final
 
         try:
@@ -127,7 +126,6 @@ class RetroDash():
     def renderStream(self, data):
         prettyValues = ""
         prettyKeys = ""
-
         for confEntry in self.redisDb.zrangebyscore(self.confKey, 0, 100):
             try:
                 confList = confEntry.split('.')
@@ -147,7 +145,6 @@ class RetroDash():
 
 
 class dashCli():
-
     def add(self, confKey, position, rddStrings):
         redisDb = EfiDB().redisDb
         rddStrings = rddStrings.strip(' ')
@@ -165,7 +162,7 @@ class dashCli():
             ttyP(1, "%s and %s already exists." % (confKey, position))
         else:
             redisDb.zadd(confKey, int(position), entry)
-            ttyP(0, "  %s  %s -- added." % (position, entry))
+            ttyP(2, "  %s  %s" % (position, entry))
 
     def rm(self, confKey, rank):
         redisDb = EfiDB().redisDb
@@ -174,7 +171,7 @@ class dashCli():
         else:
             ttyP(7, "nothing to remove")
 
-    def ls(self, confKey=''):
+    def ls(self):
         redisDb = EfiDB().redisDb
         keys = redisDb.keys('dash*')
         if keys:
@@ -189,15 +186,14 @@ class dashCli():
         else:
             ttyP(7, "found nothing!")
 
-    def run(self, channelKey, confKey, iniFile=False, redisSocket='/var/run/redis/redis.sock'):
-        """Redis Data Dashboard -- driven by Redis of course."""
+    def run(self, channelKey, confKey, iniFile=False):
+        """pyEfi Dashboard -- driven by Redis of course."""
         os.system('clear')
-        ttyP(1, "pyefi rdd | Redis Data Display.")
+        ttyP(1, "pyefi dashboard")
 
         channelKey = "stream:%s" % channelKey
         efiDB = EfiDB()
         efiDB.initSubscription(channelKey)
-
         display = RetroDash(efiDB, confKey)  # setup Retro with our DB and confKey
 
         if iniFile:  #
@@ -207,10 +203,8 @@ class dashCli():
         else:
             display.playStream()
 
-
-    def syncYml(self, ymlFileName, redisSocket='/var/run/redis/redis.sock'):
+    def syncYml(self, ymlFileName='dashboards.yml'):
         redisDb = EfiDB().redisDb
-
         with open(ymlFileName, 'r') as stream:
             try:
                 stateYml = yaml.load(stream)
@@ -227,19 +221,18 @@ class dashCli():
                         self.checkNadd(redisDb, "dashboard:" + dashboard['name'], position, rddString)
 
 
-
     def examples(self):
         ttyP(1, "dashboard entry examples")
-        ttyP(7, "'QUOTES ARE IMPORTANT'\n")
+        ttyP(7, "\n'QUOTES ARE IMPORTANT'\n")
         ttyP(3, "command examples:")
-        ttyP(4, "  ./pyefi.py dash add dashboard:basic '0.rpm|RPM|shiny|0|7500|7000|>5'")
-        ttyP(0, "    ^ Add entry '0' with key:'rpm' and label:'RPM' using the'shiny' style")
+        ttyP(4, "  ./pyefi.py dash add dashboard:basic '0.rpm.RPM.shiny.0.7500.7000.>5'")
+        ttyP(0, "    ^ Add entry '0' with key:'rpm' and label:'RPM' using the 'shiny' style")
         ttyP(0, "      with a min/max of 0/7500 with an alert at 7000. '^5' will print")
         ttyP(0, "      5 characters wide and right justify. ^ = center, < = left\n")
         ttyP(0, "      5 characters wide and right justify. ^ = center, < = left\n")
         ttyP(3, "copy-pastas")
         ttyP(0, "  ./pyefi.py dash add basic '0.rpm.RPM.shiny.0.7500.7000.>4'")
-        ttyP(0, "  ./pyefi.py dash add dashboard:basic '1.rpm.   .bar.0.7500.7000.<20'")
-        ttyP(0, "  ./pyefi.py dash add dashboard:basic '2.rpmdot.DOT.shiny.-4000.4000.3000.>7'")
-        ttyP(0, "  ./pyefi.py dash add dashboard:basic '10.coolant.TEMP.shiny.500.2000.1800.>6'")
-        ttyP(0, "  ./pyefi.py dash add dashboard:basic '20.batteryvoltage.BATT.shiny.0.3000.2500.>6'")
+        ttyP(0, "  ./pyefi.py dash add basic '1.rpm.   .bar.0.7500.7000.<20'")
+        ttyP(0, "  ./pyefi.py dash add basic '2.rpmdot.DOT.shiny.-4000.4000.3000.>7'")
+        ttyP(0, "  ./pyefi.py dash add basic '10.coolant.TEMP.shiny.500.2000.1800.>6'")
+        ttyP(0, "  ./pyefi.py dash add basic '20.batteryvoltage.BATT.shiny.0.3000.2500.>6'")
