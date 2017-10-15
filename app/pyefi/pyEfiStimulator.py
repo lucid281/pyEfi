@@ -99,13 +99,13 @@ class pyEfiStimulator():
         schedule.every(0.0001).seconds.do(commit)
 
         endc = '\033[0m'
-        ttyP(4, ("  pubSubKey @ %sstream:%s" % (endc, channelKey)))
+        ttyP(4, f'  pubSubKey @ {endc}stream:{channelKey}')
 
 
         try:
-            ttyP(0, ("\n    [stim->redis] %s/s" % (globalRate)))
+            ttyP(0, f'\n    [stim->redis] {globalRate}/s')
             while 1:  # main loop
                 schedule.run_pending()
                 time.sleep(1 / globalRate)
         except KeyboardInterrupt:  # interrupt loop nicely with ctrl-c
-            ttyP(6, "\n  EXITING: KeyboardInterrupt")
+            ttyP(6, '\n  EXITING: KeyboardInterrupt')

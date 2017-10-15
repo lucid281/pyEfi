@@ -94,13 +94,13 @@ class RetroDash():
                         final = pyEfiObject.parseEvent(deSerialized)
                     except AttributeError:
                         ttyP(1, "\n Data marked 'pyefi' but no iniFile found to decode data!")
-                        ttyP(7, "  Exiting!\n")
+                        ttyP(7, '  Exiting!\n')
                         exit(1)
                 elif 'simple' in deSerialized['type']:
                     final = deSerialized
                 else:
                     ttyP(1, "\n Data not marked 'pyefi' or 'simple")
-                    ttyP(7, "  Exiting!\n")
+                    ttyP(7, '  Exiting!\n')
                     exit(1)
             return final
 
@@ -118,7 +118,7 @@ class RetroDash():
             rate = pop / laptime
             print("\n\nEXITING: KeyboardInterrupt")
             resultsStr = f'{pop} results @ {rate:.2f}/s for {laptime:.2f} seconds.'
-            print("\nPyEfiTools Runtime Summary:" + resultsStr)
+            print(f'\nPyEfiTools Runtime Summary: {resultsStr}')
             exit(0)
 
     def renderStream(self, data):
@@ -212,7 +212,7 @@ class dashCli:
         if 'dashboards' in stateYml:
             for dashboard in stateYml['dashboards']:
                 if 'gaugePairs' and 'name' in dashboard:
-                    redisDb.delete("dashboard:" + dashboard['name'])
+                    redisDb.delete(f'dashboard:{dashboard["name"]}')
                     ttyP(3, f'\n  {dashboard["name"]}')
                     for position in dashboard['gaugePairs']:
                         rddString = dashboard['gaugePairs'][position]

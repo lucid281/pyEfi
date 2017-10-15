@@ -16,7 +16,7 @@ class EfiDB():
                 self.redisDb = redis.StrictRedis(host=hostOrSocket, port=6379,
                                                  decode_responses=decode, db=database)
             else:
-                ttyP(7, "redis conf did not work. exiting...")
+                ttyP(7, 'redis conf did not work. exiting...')
                 exit(1)
         finally:
             # this always prints, helpful debugging

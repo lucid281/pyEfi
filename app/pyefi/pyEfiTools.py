@@ -21,7 +21,7 @@ class PyEfiTools:
     # NOT USED kept cuz is only 3 lines and works - but no error checking
     def oldMethod(self):
         self.ser.write(b"A")
-        print("old method: ", self.ser.read(212))
+        print(f'old method: {self.ser.read(212)}')
 
     def genByteMappingA(self, iniPath):
         config = configparser.ConfigParser()
@@ -73,8 +73,9 @@ class PyEfiTools:
                 if bitSize == "S32": bitLetter = "l"
                 unpkStr =+ bitLetter
 
-        pText = "  ini : %s%s data points in %s bytes" % (
-                self.endc, len(unpkStr) - 1, struct.calcsize(unpkStr))
+        # pText = "  ini : %s%s data points in %s bytes" % (
+        #         self.endc, len(unpkStr) - 1, struct.calcsize(unpkStr))
+        pText = f'  ini : {self.endc}{len(unpkStr) - 1} data points in {struct.calcsize(unpkStr)} bytes'
         ttyP(4, pText)
 
         # make results available
