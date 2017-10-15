@@ -2,12 +2,12 @@
 #  pyEfi tmuxp dashboard
 #
 session_name: pyEfiDashboard
-suppress_history: false
+#suppress_history: false
 windows:
-- window_name: project1
-  layout: main-horizontal
+- window_name: example
+  layout: main-vertical
   options:
-    main-pane-height: 25
+    main-pane-width: 110
   panes:
 # 1: run redis data display
 # '--iniFile=' needed to encode/decode serial data, not needed for stimulator/generic data

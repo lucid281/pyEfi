@@ -36,7 +36,7 @@ class runCli():
     def collectMS(self, iniFile, serialLoc, channelKey):
         """Megasquirt Serial -> Redis Collector."""
         os.system('clear')
-        ttyP(1, "pyefi collectMS")
+        ttyP(1, 'pyefi collectMS')
 
         redisDb = EfiDB().redisDb  # setup db connection
         efi = PyEfiTools()  # start up pyEfi
@@ -48,31 +48,34 @@ class runCli():
 
     def stim(self, channelKey, rate=44):
         """Lightweight collectMS simulator"""
-        ttyP(1, "pyefi stimulator")
+        ttyP(1, 'pyefi stimulator')
         pyEfiStimulator(channelKey, rate)
 
 class testCli():
-    def H(self, count):
+    def H(self, count, length=512):
+        ttyP(2, f'pyEfi redis benchmark:')
+        ttyP(3, f'  {count} entries with {length} characters')
         redisDb = EfiDB().redisDb
+        sampleData = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(length))
 
-        sampleData = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(512))
-
+        ttyP(4, '\nHSET')
         start = time.time()
         for x in range(0, count):
             redisDb.hset('test', x, sampleData)
         end = time.time()
         dur = end - start
         rate = count / dur
-        colTxt = " HSET %s keys in %.4f seconds @ %.0f/s" % (count, dur, rate)
+        colTxt = f'  {dur:.5f} seconds @ {rate:.0f}/s'
         ttyP(0, colTxt)
 
+        ttyP(4, 'HGET')
         start = time.time()
         for x in range(0, count):
             redisDb.hget('test', x)
         end = time.time()
         dur = end - start
         rate = count / dur
-        colTxt = " HGET %s keys in %.4f seconds @ %.0f/s" % (count, dur, rate)
+        colTxt = f'  {dur:.5f} seconds @ {rate:.0f}/s'
         ttyP(0, colTxt)
 
         redisDb.delete('test')

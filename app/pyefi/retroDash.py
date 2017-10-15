@@ -77,8 +77,7 @@ class RetroDash():
             # boxes = "\u2588" * colKey  # boxes
             boxes = "-" * colKey
             colText = ("{:%s}" % (justStr)).format(boxes)
-            pColText = ("\033[38;5;%sm%s\033[0m" %
-                        (rainbow[numKey], colText))
+            pColText = f'\033[38;5;{rainbow[numKey]}m{colText}\033[0m'
             return pColText
 
         renderer = {"none": none,
@@ -162,7 +161,7 @@ class dashCli():
             ttyP(1, f'{confKey} and {position} already exists.')
         else:
             redisDb.zadd(confKey, int(position), entry)
-            ttyP(2, f'  {position}  {entry}')
+            ttyP(0, f'  {position}  {entry}')
 
     def rm(self, confKey, rank):
         redisDb = EfiDB().redisDb
@@ -196,7 +195,7 @@ class dashCli():
         efiDB.initSubscription(channelKey)
         display = RetroDash(efiDB, confKey)  # setup Retro with our DB and confKey
 
-        if iniFile:  #
+        if iniFile:
             efi = PyEfiTools()
             efi.initIni(iniFile)
             display.playStream(efi)
@@ -209,17 +208,16 @@ class dashCli():
             try:
                 stateYml = yaml.load(stream)
             except yaml.YAMLError as exc:
-                ttyP(7, "yml load failed.")
+                ttyP(7, 'yml load failed.')
                 exit(1)
         if 'dashboards' in stateYml:
             for dashboard in stateYml['dashboards']:
                 if 'gaugePairs' and 'name' in dashboard:
                     redisDb.delete("dashboard:" + dashboard['name'])
-                    ttyP(3, "\n  %s" % dashboard['name'])
+                    ttyP(3, f'\n  {dashboard["name"]}')
                     for position in dashboard['gaugePairs']:
                         rddString = dashboard['gaugePairs'][position]
-                        self.checkNadd(redisDb, "dashboard:" + dashboard['name'], position, rddString)
-
+                        self.checkNadd(redisDb, f'dashboard:{dashboard["name"]}', position, rddString)
 
     def examples(self):
         ttyP(1, "dashboard entry examples")
