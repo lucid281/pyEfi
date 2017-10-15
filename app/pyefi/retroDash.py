@@ -23,8 +23,8 @@ class RetroDash():
         self.pyEfi = pyEfiObject
         self.redisDb = pyEfiObject.redisDb
         self.sub = pyEfiObject.sub
-        self.confKey = "dashboard:%s" % confKey
-        ttyP(4, "  confKey: %s%s" % (self.endc, self.confKey))
+        self.confKey = f'dashboard:{confKey}'
+        ttyP(4, f'  confKey: {self.endc}{self.confKey}')
 
     def retroStr(self, confList, inputData):
         # BUG: Not using minValue yet
@@ -52,7 +52,7 @@ class RetroDash():
             if numKey >= rainbowLen: numKey = rainbowLen - 1
             # pas str for cols and set array position(color) + rpm text
             colText = ("{:%s}" % (justStr)).format(inputData[keyName])
-            pColText = ("\033[38;5;%sm%s\033[0m" % (rainbow[numKey], colText))
+            pColText = f'\033[38;5;{rainbow[numKey]}m{colText}\033[0m'
             return pColText
 
         def bar():
@@ -119,7 +119,7 @@ class RetroDash():
             laptime = t_end - t_start
             rate = pop / laptime
             print("\n\nEXITING: KeyboardInterrupt")
-            resultsStr = "%s results @ %.2f/s for %.2f seconds." % (pop, rate, laptime)
+            resultsStr = f'{pop} results @ {rate:.2f}/s for {laptime:.2f} seconds.'
             print("\nPyEfiTools Runtime Summary:" + resultsStr)
             exit(0)
 
@@ -140,7 +140,7 @@ class RetroDash():
                 prettyKeys += "!"
 
         if prettyValues:
-            prettyBuffer = "%s\n%s" % (prettyValues, prettyKeys)
+            prettyBuffer = f'{prettyValues}\n{prettyKeys}'
             print(prettyBuffer, end='\r')
 
 
@@ -149,35 +149,35 @@ class dashCli():
         redisDb = EfiDB().redisDb
         rddStrings = rddStrings.strip(' ')
         if ',' in rddStrings:
-            ttyP(1, "adding entries....")
+            ttyP(1, 'adding entries....')
             rrdConfs = rddStrings.split(',')
             for entry in rrdConfs:
-                self.checkNadd(redisDb, "dashboard:" + confKey, position, entry)
+                self.checkNadd(redisDb, f'dashboard:{confKey}', position, entry)
         else:
-            ttyP(1, "adding entry....")
-            self.checkNadd(redisDb, "dashboard:" + confKey, position, rddStrings)
+            ttyP(1, 'adding entry....')
+            self.checkNadd(redisDb, f'dashboard:{confKey}', position, rddStrings)
 
     def checkNadd(self, redisDb, confKey, position, entry):
         if redisDb.zrangebyscore(confKey, position, position):
-            ttyP(1, "%s and %s already exists." % (confKey, position))
+            ttyP(1, f'{confKey} and {position} already exists.')
         else:
             redisDb.zadd(confKey, int(position), entry)
-            ttyP(2, "  %s  %s" % (position, entry))
+            ttyP(2, f'  {position}  {entry}')
 
     def rm(self, confKey, rank):
         redisDb = EfiDB().redisDb
-        if redisDb.zremrangebyscore("dashboard:" + confKey, rank, rank):
-            ttyP(1, "dashboard entry removed")
+        if redisDb.zremrangebyscore(f'dashboard:{confKey}', rank, rank):
+            ttyP(1, 'dashboard entry removed')
         else:
-            ttyP(7, "nothing to remove")
+            ttyP(7, 'nothing to remove')
 
     def ls(self):
         redisDb = EfiDB().redisDb
         keys = redisDb.keys('dash*')
         if keys:
-            ttyP(4, "\n  found keys:")
+            ttyP(4, '\n  found keys:')
             for key in keys:
-                ttyP(1, ("    %s" % key))
+                ttyP(1, f'    {key}')
                 confs = redisDb.zrangebyscore(key, 0, 20, withscores=True)  # top 20 fields
                 if confs:
                     for conf, score in confs:
