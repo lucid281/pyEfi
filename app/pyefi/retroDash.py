@@ -74,8 +74,7 @@ class RetroDash():
             colStep = int(maxNumF / colWidth)
             colKey = int(numNowF / colStep)
             if colKey >= colWidth: colKey = colWidth - 1
-            # boxes = "\u2588" * colKey  # boxes
-            boxes = "-" * colKey
+            boxes = "\u2501" * colKey
             colText = ("{:%s}" % (justStr)).format(boxes)
             pColText = f'\033[38;5;{rainbow[numKey]}m{colText}\033[0m'
             return pColText
@@ -140,10 +139,10 @@ class RetroDash():
 
         if prettyValues:
             prettyBuffer = f'{prettyValues}\n{prettyKeys}'
-            print(prettyBuffer, end='\r')
+            print(prettyBuffer, end='\r', flush=True)
 
 
-class dashCli():
+class dashCli:
     def add(self, confKey, position, rddStrings):
         redisDb = EfiDB().redisDb
         rddStrings = rddStrings.strip(' ')
@@ -181,16 +180,16 @@ class dashCli():
                 if confs:
                     for conf, score in confs:
                         niceScore = ("{:%s}" % ("<3")).format(int(score))
-                        ttyP(0, "      %s  %s" % (niceScore, conf))
+                        ttyP(0, f'      {niceScore}  {conf}')
         else:
             ttyP(7, "found nothing!")
 
     def run(self, channelKey, confKey, iniFile=False):
         """pyEfi Dashboard -- driven by Redis of course."""
         os.system('clear')
-        ttyP(1, "pyefi dashboard")
+        ttyP(1, 'pyefi dashboard')
 
-        channelKey = "stream:%s" % channelKey
+        channelKey = f'stream:{channelKey}'
         efiDB = EfiDB()
         efiDB.initSubscription(channelKey)
         display = RetroDash(efiDB, confKey)  # setup Retro with our DB and confKey
