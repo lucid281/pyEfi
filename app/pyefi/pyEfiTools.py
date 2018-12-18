@@ -71,7 +71,7 @@ class PyEfiTools:
                 if bitSize == "S08": bitLetter = "b"
                 if bitSize == "S16": bitLetter = "h"
                 if bitSize == "S32": bitLetter = "l"
-                unpkStr =+ bitLetter
+                unpkStr += bitLetter
 
         pText = "  ini : %s%s data points in %s bytes" % (
                 self.endc, len(unpkStr) - 1, struct.calcsize(unpkStr))
